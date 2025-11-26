@@ -87,9 +87,10 @@ services:
           "--spider",
           "http://localhost:80",
         ]
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 10s
       retries: 3
+      start_period: 10s
 
 # Networks
 networks:
