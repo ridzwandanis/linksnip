@@ -257,6 +257,14 @@ docker-compose exec mongodb mongosh url-shortener
 - [ ] Password-protected links
 - [ ] Export analytics data (CSV/JSON)
 
+## 📚 Documentation
+
+- [API Documentation](docs/API.md) - Complete API reference
+- [Architecture](docs/ARCHITECTURE.md) - System design and architecture
+- [Deployment Checklist](docs/DEPLOYMENT_CHECKLIST.md) - Production deployment guide
+- [Contributing Guide](CONTRIBUTING.md) - How to contribute
+- [Security Policy](SECURITY.md) - Security and vulnerability reporting
+
 ## Contributing
 
 Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before submitting a Pull Request.
