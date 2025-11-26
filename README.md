@@ -2,6 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
+[![Docker Hub](https://img.shields.io/badge/Docker%20Hub-Images-blue.svg)](https://hub.docker.com/u/ridzwandanis)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-6.0+-green.svg)](https://www.mongodb.com/)
 
@@ -39,24 +40,30 @@ A minimalist, self-hosted URL shortening service with analytics dashboard built 
 
 ## 🚀 Quick Start
 
-### Option 1: Docker (Recommended)
+### Option 1: Docker Hub (Fastest ⚡)
+
+Pull and run pre-built images - no build required:
+
+```bash
+# Download docker-compose file
+curl -O https://raw.githubusercontent.com/ridzwandanis/linksnip/main/docker-compose.prod.yml
+
+# Start all services
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Option 2: Build from Source
 
 ```bash
 # Clone repository
 git clone https://github.com/ridzwandanis/linksnip.git
 cd linksnip
 
-# Start all services
+# Start all services (will build images)
 docker-compose up -d
 ```
 
-Access the application:
-
-- **Frontend**: http://localhost
-- **Backend API**: http://localhost:3000
-- **Dashboard**: http://localhost/dashboard (admin/admin123)
-
-### Option 2: Manual Setup
+### Option 3: Manual Setup
 
 ```bash
 # Terminal 1 - Backend
@@ -65,6 +72,12 @@ cd backend && npm install && npm run dev
 # Terminal 2 - Frontend
 cd frontend && npm install && npm run dev
 ```
+
+**Access the application:**
+
+- **Frontend**: http://localhost
+- **Backend API**: http://localhost:3000
+- **Dashboard**: http://localhost/dashboard (admin/admin123)
 
 ⚠️ **Security**: Change default admin password before production deployment!
 
