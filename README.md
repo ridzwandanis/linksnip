@@ -5,7 +5,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-6.0+-green.svg)](https://www.mongodb.com/)
 
-A minimalist, self-hosted URL shortening service with analytics dashboard.
+A minimalist, self-hosted URL shortening service with analytics dashboard built with Node.js, React, and MongoDB.
 
 ![LinkSnip Demo](https://via.placeholder.com/800x400?text=LinkSnip+Demo+Screenshot)
 
