@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # Application service
+  app:
+    build: .
+    container_name: url-shortener-app
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongodb:27017/url-shortener
+      - BASE_URL=http://localhost:3000
+      - LOG_LEVEL=info
+      - SHORT_CODE_LENGTH=6
+    depends_on:
+      - mongodb
+    networks:
+      - url-shortener-network
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+
+  # MongoDB service
+  mongodb:
+    image: mongo:6.0
+    container_name: url-shortener-mongodb
+    ports:
+      - '27017:27017'
+    environment:
+      - MONGO_INITDB_DATABASE=url-shortener
+    networks:
+      - url-shortener-network
+    restart: unless-stopped
+    volumes:
+      - mongodb-data:/data/db
+      - mongodb-config:/data/configdb
+
+# Networks
+networks:
+  url-shortener-network:
+    driver: bridge
+
+# Volumes for data persistence
+volumes:
+  mongodb-data:
+    driver: local
+  mongodb-config:
+    driver: local

@@ -1,0 +1,103 @@
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:6.0
+    container_name: linksnip-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=url-shortener
+    networks:
+      - linksnip-network
+    restart: unless-stopped
+    volumes:
+      - mongodb-data:/data/db
+      - mongodb-config:/data/configdb
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/url-shortener --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: linksnip-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongodb:27017/url-shortener
+      - BASE_URL=http://localhost
+      - LOG_LEVEL=info
+      - SHORT_CODE_LENGTH=6
+      - RATE_LIMIT_ENABLED=true
+      - RATE_LIMIT_WINDOW_MS=60000
+      - RATE_LIMIT_MAX_REQUESTS=10
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=admin123
+      - ANALYTICS_RETENTION_DAYS=90
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - linksnip-network
+    restart: unless-stopped
+    volumes:
+      - ./backend/logs:/app/logs
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3000/api/health",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Frontend (Nginx + React)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: linksnip-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - linksnip-network
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:80",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+# Networks
+networks:
+  linksnip-network:
+    driver: bridge
+
+# Volumes for data persistence
+volumes:
+  mongodb-data:
+    driver: local
+  mongodb-config:
+    driver: local

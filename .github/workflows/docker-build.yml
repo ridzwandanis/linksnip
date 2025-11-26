@@ -1,0 +1,36 @@
+name: Docker Build Test
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Docker images
+        run: docker-compose build
+
+      - name: Start services
+        run: docker-compose up -d
+
+      - name: Wait for services
+        run: sleep 30
+
+      - name: Check backend health
+        run: curl -f http://localhost:3000/health || exit 1
+
+      - name: Check frontend
+        run: curl -f http://localhost || exit 1
+
+      - name: Show logs on failure
+        if: failure()
+        run: docker-compose logs
+
+      - name: Stop services
+        run: docker-compose down

@@ -1,0 +1,686 @@
+{
+  "info": {
+    "name": "URL Shortener API",
+    "description": "A RESTful API service for URL shortening built with Node.js, Express.js, and MongoDB.\n\nThis collection includes all API endpoints with example requests and responses.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "2.0.0"
+  },
+  "auth": {
+    "type": "basic",
+    "basic": [
+      { "key": "username", "value": "{{adminUsername}}", "type": "string" },
+      { "key": "password", "value": "{{adminPassword}}", "type": "string" }
+    ]
+  },
+  "item": [
+    {
+      "name": "URL Operations",
+      "item": [
+        {
+          "name": "Create Short URL (Random Code)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success field\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.have.property('shortCode');",
+                  "    pm.expect(jsonData.data).to.have.property('shortUrl');",
+                  "    pm.expect(jsonData.data).to.have.property('originalUrl');",
+                  "    pm.expect(jsonData.data).to.have.property('createdAt');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"shortCode\", jsonData.data.shortCode);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://github.com/nodejs/node\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/shorten",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shorten"]
+            }
+          }
+        },
+        {
+          "name": "Create Short URL (Custom Code)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Custom code is used\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.shortCode).to.eql('my-custom-link');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    pm.environment.set(\"customShortCode\", \"my-custom-link\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://example.com/my-page\",\n  \"customCode\": \"my-custom-link\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/shorten",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shorten"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success with Custom Code",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"shortCode\": \"my-custom-link\",\n    \"shortUrl\": \"http://localhost:3000/my-custom-link\",\n    \"originalUrl\": \"https://example.com/my-page\",\n    \"createdAt\": \"2025-11-25T10:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Short URL - Invalid Custom Code",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://example.com\",\n  \"customCode\": \"bad_code!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/shorten",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shorten"]
+            }
+          },
+          "response": [
+            {
+              "name": "Invalid Characters Error",
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": false,\n  \"error\": \"Custom code can only contain alphanumeric characters and hyphens\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Short URL - Reserved Code",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://example.com\",\n  \"customCode\": \"api\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/shorten",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shorten"]
+            }
+          },
+          "response": [
+            {
+              "name": "Reserved Word Error",
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": false,\n  \"error\": \"Custom code 'api' is reserved and cannot be used\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Short URL - Duplicate Code",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://example.com\",\n  \"customCode\": \"my-custom-link\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/shorten",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shorten"]
+            }
+          },
+          "response": [
+            {
+              "name": "Duplicate Code Error",
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": false,\n  \"error\": \"Custom code 'my-custom-link' is already in use\",\n  \"details\": { \"code\": \"CODE_EXISTS\" }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get URL Information",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains all URL information\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.have.property('shortCode');",
+                  "    pm.expect(jsonData.data).to.have.property('originalUrl');",
+                  "    pm.expect(jsonData.data).to.have.property('clicks');",
+                  "    pm.expect(jsonData.data).to.have.property('isActive');",
+                  "    pm.expect(jsonData.data).to.have.property('analytics');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/urls/{{shortCode}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "urls", "{{shortCode}}"]
+            }
+          }
+        },
+        {
+          "name": "Redirect to Original URL",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/{{shortCode}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{shortCode}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete URL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response confirms deletion\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/urls/{{shortCode}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "urls", "{{shortCode}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics (Requires Auth)",
+      "item": [
+        {
+          "name": "Get URL Analytics",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains analytics data\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.have.property('totalClicks');",
+                  "    pm.expect(jsonData.data).to.have.property('uniqueVisitors');",
+                  "    pm.expect(jsonData.data).to.have.property('topReferrers');",
+                  "    pm.expect(jsonData.data).to.have.property('topBrowsers');",
+                  "    pm.expect(jsonData.data).to.have.property('topOS');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/analytics/urls/{{shortCode}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analytics", "urls", "{{shortCode}}"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"shortCode\": \"my-link\",\n    \"originalUrl\": \"https://example.com\",\n    \"totalClicks\": 150,\n    \"uniqueVisitors\": 98,\n    \"lastClickAt\": \"2025-11-25T15:30:00.000Z\",\n    \"topReferrers\": [\n      { \"source\": \"google.com\", \"count\": 45 },\n      { \"source\": \"direct\", \"count\": 73 }\n    ],\n    \"clicksByDay\": [\n      { \"date\": \"2025-11-25\", \"count\": 25 }\n    ],\n    \"topBrowsers\": [\n      { \"browser\": \"Chrome\", \"count\": 85 }\n    ],\n    \"topOS\": [\n      { \"os\": \"Windows\", \"count\": 70 }\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Error",
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": false,\n  \"error\": \"Authentication required\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get URL Analytics (with Date Range)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/analytics/urls/{{shortCode}}?startDate=2025-11-01&endDate=2025-11-30",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analytics", "urls", "{{shortCode}}"],
+              "query": [
+                { "key": "startDate", "value": "2025-11-01" },
+                { "key": "endDate", "value": "2025-11-30" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get System Analytics",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains system stats\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.have.property('totalUrls');",
+                  "    pm.expect(jsonData.data).to.have.property('totalClicks');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/analytics/system",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analytics", "system"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"totalUrls\": 1250,\n    \"totalClicks\": 45000,\n    \"uniqueVisitors\": 12000,\n    \"popularUrls\": [\n      { \"shortCode\": \"popular1\", \"totalClicks\": 5000 }\n    ]\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Popular URLs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/analytics/popular?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analytics", "popular"],
+              "query": [{ "key": "limit", "value": "10" }]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"shortCode\": \"popular1\",\n      \"originalUrl\": \"https://example.com/popular\",\n      \"totalClicks\": 5000,\n      \"uniqueVisitors\": 3200\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Rate Limiting",
+      "item": [
+        {
+          "name": "Test Rate Limit (429 Response)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// This test expects 429 after exceeding rate limit",
+                  "pm.test(\"Rate limit headers present\", function () {",
+                  "    pm.expect(pm.response.headers.has('X-RateLimit-Limit')).to.be.true;",
+                  "    pm.expect(pm.response.headers.has('X-RateLimit-Remaining')).to.be.true;",
+                  "    pm.expect(pm.response.headers.has('X-RateLimit-Reset')).to.be.true;",
+                  "});",
+                  "",
+                  "if (pm.response.code === 429) {",
+                  "    pm.test(\"Rate limit exceeded response\", function () {",
+                  "        var jsonData = pm.response.json();",
+                  "        pm.expect(jsonData.success).to.be.false;",
+                  "        pm.expect(jsonData.error).to.include('Too many requests');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://example.com/rate-limit-test\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/shorten",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shorten"]
+            },
+            "description": "Run this request multiple times quickly to trigger rate limiting (default: 10 requests per minute)"
+          },
+          "response": [
+            {
+              "name": "Rate Limit Exceeded",
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "X-RateLimit-Limit", "value": "10" },
+                { "key": "X-RateLimit-Remaining", "value": "0" },
+                { "key": "X-RateLimit-Reset", "value": "1700910900" },
+                { "key": "Retry-After", "value": "45" }
+              ],
+              "body": "{\n  \"success\": false,\n  \"error\": \"Too many requests, please try again later\",\n  \"details\": { \"retryAfter\": 45 }\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Test rate limiting functionality. Default: 10 requests per minute per IP on POST /api/shorten"
+    },
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Check Service Health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Service is healthy\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('healthy');",
+                  "    pm.expect(jsonData.database).to.eql('connected');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": [
+            {
+              "name": "Healthy Response",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"status\": \"healthy\",\n  \"timestamp\": \"2025-11-25T10:00:00.000Z\",\n  \"database\": \"connected\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Example Workflow",
+      "item": [
+        {
+          "name": "1. Create Short URL (Random)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"workflowShortCode\", jsonData.data.shortCode);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://www.example.com/workflow-test\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/shorten",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shorten"]
+            }
+          }
+        },
+        {
+          "name": "2. Create Short URL (Custom Code)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    pm.environment.set(\"workflowCustomCode\", \"workflow-test\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://www.example.com/custom\",\n  \"customCode\": \"workflow-test\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/shorten",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shorten"]
+            }
+          }
+        },
+        {
+          "name": "3. Get URL Info (0 clicks)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/urls/{{workflowCustomCode}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "urls", "{{workflowCustomCode}}"]
+            }
+          }
+        },
+        {
+          "name": "4. Access Short URL (Redirect)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/{{workflowCustomCode}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{workflowCustomCode}}"]
+            }
+          }
+        },
+        {
+          "name": "5. Get URL Info (1 click)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/urls/{{workflowCustomCode}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "urls", "{{workflowCustomCode}}"]
+            }
+          }
+        },
+        {
+          "name": "6. Get URL Analytics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/analytics/urls/{{workflowCustomCode}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analytics", "urls", "{{workflowCustomCode}}"]
+            }
+          }
+        },
+        {
+          "name": "7. Get System Analytics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/analytics/system",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analytics", "system"]
+            }
+          }
+        },
+        {
+          "name": "8. Delete URL",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/urls/{{workflowCustomCode}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "urls", "{{workflowCustomCode}}"]
+            }
+          }
+        },
+        {
+          "name": "9. Verify Deletion (404)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/urls/{{workflowCustomCode}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "urls", "{{workflowCustomCode}}"]
+            }
+          }
+        }
+      ],
+      "description": "A complete workflow demonstrating the full lifecycle of a shortened URL including custom codes and analytics."
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "adminUsername", "value": "admin", "type": "string" },
+    {
+      "key": "adminPassword",
+      "value": "your-secure-password-here",
+      "type": "string"
+    }
+  ]
+}
