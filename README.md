@@ -37,37 +37,26 @@ A minimalist, self-hosted URL shortening service with analytics dashboard.
 - MongoDB
 - Winston (logging)
 
-## Quick Start
+## 🚀 Quick Start
 
-### 🚀 Deploy ke VPS (Production)
-
-Lihat panduan lengkap di **[docs/QUICK_START.md](docs/QUICK_START.md)**
+### Option 1: Docker (Recommended)
 
 ```bash
-# Di VPS Ubuntu/Debian
+# Clone repository
 git clone https://github.com/ridzwandanis/linksnip.git
 cd linksnip
-docker compose up -d --build
-```
 
-### 💻 Local Development
-
-Lihat panduan lengkap di **[docs/LOCAL_DEVELOPMENT.md](docs/LOCAL_DEVELOPMENT.md)**
-
-**Docker (Recommended):**
-
-```bash
-# Linux/Mac
-./scripts/start.sh
-
-# Windows
-scripts\start.bat
-
-# Or directly
+# Start all services
 docker-compose up -d
 ```
 
-**Manual:**
+Access the application:
+
+- **Frontend**: http://localhost
+- **Backend API**: http://localhost:3000
+- **Dashboard**: http://localhost/dashboard (admin/admin123)
+
+### Option 2: Manual Setup
 
 ```bash
 # Terminal 1 - Backend
@@ -77,181 +66,58 @@ cd backend && npm install && npm run dev
 cd frontend && npm install && npm run dev
 ```
 
-### Default Admin Credentials
+⚠️ **Security**: Change default admin password before production deployment!
 
-- Username: `admin`
-- Password: `admin123`
+## 📖 Documentation
 
-⚠️ **Penting**: Ubah password admin di `docker-compose.yml` sebelum deploy ke production!
+For detailed guides, see the [docs](docs/) folder:
 
-## Quick Start with Docker
+| Document                                             | Description                              |
+| ---------------------------------------------------- | ---------------------------------------- |
+| [API Reference](docs/API.md)                         | Complete API documentation with examples |
+| [Architecture](docs/ARCHITECTURE.md)                 | System design and technical architecture |
+| [Local Development](docs/LOCAL_DEVELOPMENT.md)       | Development environment setup            |
+| [Quick Start](docs/QUICK_START.md)                   | VPS deployment guide                     |
+| [Deployment Checklist](docs/DEPLOYMENT_CHECKLIST.md) | Production deployment checklist          |
 
-Jalankan seluruh aplikasi (backend, frontend, database) dengan satu perintah:
+## ⚙️ Configuration
 
-```bash
-docker-compose up -d
-```
+### Environment Variables
 
-Aplikasi akan tersedia di:
-
-- **Frontend**: http://localhost
-- **Backend API**: http://localhost:3000
-- **MongoDB**: localhost:27017
-
-### Default Admin Credentials
-
-- Username: `admin`
-- Password: `admin123`
-
-⚠️ **Penting**: Ubah password admin di `docker-compose.yml` sebelum deploy ke production!
-
-### Menghentikan Aplikasi
-
-```bash
-docker-compose down
-```
-
-### Menghapus Data (termasuk database)
-
-```bash
-docker-compose down -v
-```
-
-## Development Setup
-
-### Prerequisites
-
-- Node.js 18+ & npm
-- MongoDB 6.0+
-
-### Backend Setup
-
-```bash
-cd backend
-npm install
-cp .env.example .env
-# Edit .env sesuai kebutuhan
-npm run dev
-```
-
-### Frontend Setup
-
-```bash
-cd frontend
-npm install
-cp .env.example .env
-# Edit .env sesuai kebutuhan
-npm run dev
-```
-
-## Environment Variables
-
-### Backend (.env)
+**Backend** (`backend/.env`):
 
 ```env
 NODE_ENV=development
 PORT=3000
 MONGODB_URI=mongodb://localhost:27017/url-shortener
 BASE_URL=http://localhost:3000
-LOG_LEVEL=info
-SHORT_CODE_LENGTH=6
-RATE_LIMIT_ENABLED=true
-RATE_LIMIT_WINDOW_MS=60000
-RATE_LIMIT_MAX_REQUESTS=10
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=your-secure-password
-ANALYTICS_RETENTION_DAYS=90
 ```
 
-### Frontend (.env)
+**Frontend** (`frontend/.env`):
 
 ```env
 VITE_API_BASE_URL=http://localhost:3000
 ```
 
-## API Endpoints
+See `.env.example` files for complete configuration options.
 
-### Public Endpoints
-
-- `POST /api/shorten` - Shorten a URL
-- `GET /:shortCode` - Redirect to original URL
-
-### Protected Endpoints (require authentication)
-
-- `GET /api/analytics/system` - Get system analytics
-- `GET /api/analytics/popular` - Get popular URLs
-- `DELETE /api/urls/:shortCode` - Delete a URL
-
-## Project Structure
-
-```
-linksnip/
-├── backend/              # Backend API
-│   ├── src/
-│   │   ├── controllers/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   ├── services/
-│   │   ├── middleware/
-│   │   └── server.js
-│   ├── Dockerfile
-│   └── package.json
-├── frontend/             # Frontend React app
-│   ├── src/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   └── utils/
-│   ├── Dockerfile
-│   ├── nginx.conf
-│   └── package.json
-├── docker-compose.yml    # Docker orchestration
-└── README.md
-```
-
-## Docker Commands
-
-### Build dan jalankan semua services
+## 🐳 Docker Commands
 
 ```bash
-docker-compose up --build -d
-```
+# Start services
+docker-compose up -d
 
-### Lihat logs
-
-```bash
-# Semua services
+# View logs
 docker-compose logs -f
 
-# Service tertentu
-docker-compose logs -f backend
-docker-compose logs -f frontend
-docker-compose logs -f mongodb
+# Stop services
+docker-compose down
+
+# Rebuild
+docker-compose up -d --build
 ```
-
-### Restart service tertentu
-
-```bash
-docker-compose restart backend
-docker-compose restart frontend
-```
-
-### Akses MongoDB shell
-
-```bash
-docker-compose exec mongodb mongosh url-shortener
-```
-
-## Production Deployment
-
-1. Clone repository
-2. Update environment variables di `docker-compose.yml`:
-   - Ubah `ADMIN_PASSWORD`
-   - Ubah `BASE_URL` ke domain production
-3. Jalankan: `docker-compose up -d`
-4. Setup reverse proxy (Nginx/Caddy) untuk HTTPS
-5. Setup backup untuk MongoDB volume
 
 ## Roadmap
 
