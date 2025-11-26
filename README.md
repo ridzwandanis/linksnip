@@ -57,6 +57,13 @@ Lihat panduan lengkap di **[docs/LOCAL_DEVELOPMENT.md](docs/LOCAL_DEVELOPMENT.md
 **Docker (Recommended):**
 
 ```bash
+# Linux/Mac
+./scripts/start.sh
+
+# Windows
+scripts\start.bat
+
+# Or directly
 docker-compose up -d
 ```
 
