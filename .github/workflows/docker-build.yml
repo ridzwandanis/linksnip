@@ -19,16 +19,16 @@ jobs:
           cp frontend/.env.example frontend/.env
 
       - name: Build Docker images
-        run: docker-compose build
+        run: docker compose build
 
       - name: Start services
-        run: docker-compose up -d
+        run: docker compose up -d
 
       - name: Wait for services to be ready
         run: sleep 45
 
       - name: Check if containers are running
-        run: docker-compose ps
+        run: docker compose ps
 
       - name: Check backend health
         run: |
@@ -41,7 +41,7 @@ jobs:
             sleep 5
           done
           echo "Backend health check failed"
-          docker-compose logs backend
+          docker compose logs backend
           exit 1
 
       - name: Check frontend
@@ -50,14 +50,14 @@ jobs:
             echo "Frontend is accessible"
           else
             echo "Frontend check failed"
-            docker-compose logs frontend
+            docker compose logs frontend
             exit 1
           fi
 
       - name: Show logs on failure
         if: failure()
-        run: docker-compose logs
+        run: docker compose logs
 
       - name: Stop services
         if: always()
-        run: docker-compose down -v
+        run: docker compose down -v
