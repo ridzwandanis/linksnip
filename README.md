@@ -41,7 +41,7 @@ A minimalist, self-hosted URL shortening service with analytics dashboard.
 
 ### 🚀 Deploy ke VPS (Production)
 
-Lihat panduan lengkap di **[QUICK_START.md](QUICK_START.md)**
+Lihat panduan lengkap di **[docs/QUICK_START.md](docs/QUICK_START.md)**
 
 ```bash
 # Di VPS Ubuntu/Debian
@@ -52,7 +52,7 @@ docker compose up -d --build
 
 ### 💻 Local Development
 
-Lihat panduan lengkap di **[LOCAL_DEVELOPMENT.md](LOCAL_DEVELOPMENT.md)**
+Lihat panduan lengkap di **[docs/LOCAL_DEVELOPMENT.md](docs/LOCAL_DEVELOPMENT.md)**
 
 **Docker (Recommended):**
 
@@ -261,7 +261,9 @@ docker-compose exec mongodb mongosh url-shortener
 
 - [API Documentation](docs/API.md) - Complete API reference
 - [Architecture](docs/ARCHITECTURE.md) - System design and architecture
-- [Deployment Checklist](docs/DEPLOYMENT_CHECKLIST.md) - Production deployment guide
+- [Quick Start Guide](docs/QUICK_START.md) - VPS deployment guide
+- [Local Development](docs/LOCAL_DEVELOPMENT.md) - Development setup
+- [Deployment Checklist](docs/DEPLOYMENT_CHECKLIST.md) - Production checklist
 - [Contributing Guide](CONTRIBUTING.md) - How to contribute
 - [Security Policy](SECURITY.md) - Security and vulnerability reporting
 
