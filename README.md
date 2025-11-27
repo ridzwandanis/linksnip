@@ -8,9 +8,23 @@
 
 A minimalist, self-hosted URL shortening service with analytics dashboard built with Node.js, React, and MongoDB.
 
-![LinkSnip Demo](https://via.placeholder.com/800x400?text=LinkSnip+Demo+Screenshot)
+## 📸 Screenshots
 
-> **Note**: Replace the demo image above with an actual screenshot of your application
+<div align="center">
+
+### Main Interface
+
+![LinkSnip Main Interface](https://cdn.clariosolution.co/demo1.png)
+
+### Analytics Dashboard
+
+![Analytics Dashboard](https://cdn.clariosolution.co/demo2.png)
+
+### URL Management
+
+![URL Management](https://cdn.clariosolution.co/demo3.png)
+
+</div>
 
 ## Features
 
