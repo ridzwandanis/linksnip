@@ -40,46 +40,54 @@ A minimalist, self-hosted URL shortening service with analytics dashboard built 
 
 ## 🚀 Quick Start
 
-### Option 1: Docker Hub (Fastest ⚡)
+### Option 1: VPS Deployment (Recommended for Production)
 
-Pull and run pre-built images - no build required:
-
-```bash
-# Download docker-compose file
-curl -O https://raw.githubusercontent.com/ridzwandanis/linksnip/main/docker-compose.prod.yml
-
-# Start all services
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-### Option 2: Build from Source
+Deploy to your VPS with Docker in 5 minutes:
 
 ```bash
-# Clone repository
+# 1. Install Docker (if not installed)
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# 2. Clone repository
 git clone https://github.com/ridzwandanis/linksnip.git
 cd linksnip
 
-# Start all services (will build images)
-docker-compose up -d
+# 3. Configure environment
+cp .env.production.example .env
+nano .env  # Edit BASE_URL and ADMIN_PASSWORD
+
+# 4. Start services
+docker compose up -d
 ```
 
-### Option 3: Manual Setup
+**📖 Complete VPS Guide:** See [docs/VPS_DEPLOYMENT.md](docs/VPS_DEPLOYMENT.md) for detailed instructions including domain setup and SSL.
+
+### Option 2: Local Development
 
 ```bash
-# Terminal 1 - Backend
-cd backend && npm install && npm run dev
+# Clone and start
+git clone https://github.com/ridzwandanis/linksnip.git
+cd linksnip
+docker compose up -d
+```
 
-# Terminal 2 - Frontend
-cd frontend && npm install && npm run dev
+### Option 3: Docker Hub (Pre-built Images)
+
+```bash
+# Download and run
+curl -O https://raw.githubusercontent.com/ridzwandanis/linksnip/main/docker-compose.prod.yml
+docker compose -f docker-compose.prod.yml up -d
 ```
 
 **Access the application:**
 
-- **Frontend**: http://localhost
+- **Frontend**: http://localhost (or your domain)
 - **Backend API**: http://localhost:3000
-- **Dashboard**: http://localhost/dashboard (admin/admin123)
+- **Dashboard**: http://localhost/dashboard
+- **Default Login**: admin / admin123
 
-⚠️ **Security**: Change default admin password before production deployment!
+⚠️ **Security**: Change admin password in `.env` before production deployment!
 
 ## 📖 Documentation
 
