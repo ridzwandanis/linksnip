@@ -3,8 +3,8 @@ services:
   mongodb:
     image: mongo:6.0
     container_name: linksnip-mongodb
-    ports:
-      - "27017:27017"
+    expose:
+      - "27017"
     environment:
       - MONGO_INITDB_DATABASE=url-shortener
     networks:
@@ -25,8 +25,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: linksnip-backend
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     environment:
       - NODE_ENV=production
       - PORT=3000
@@ -69,8 +69,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: linksnip-frontend
-    ports:
-      - "80:80"
+    expose:
+      - "80"
     depends_on:
       - backend
       - mongodb
