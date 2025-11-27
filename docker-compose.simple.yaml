@@ -1,0 +1,58 @@
+# Simplified Docker Compose for Coolify (no health checks)
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:6.0
+    container_name: linksnip-mongodb
+    environment:
+      - MONGO_INITDB_DATABASE=url-shortener
+    networks:
+      - linksnip-network
+    restart: unless-stopped
+    volumes:
+      - mongodb-data:/data/db
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: linksnip-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongodb:27017/url-shortener
+      - BASE_URL=http://localhost
+      - LOG_LEVEL=info
+      - SHORT_CODE_LENGTH=6
+      - RATE_LIMIT_ENABLED=true
+      - RATE_LIMIT_WINDOW_MS=60000
+      - RATE_LIMIT_MAX_REQUESTS=10
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=admin123
+      - ANALYTICS_RETENTION_DAYS=90
+    networks:
+      - linksnip-network
+    restart: unless-stopped
+
+  # Frontend (Nginx + React)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: linksnip-frontend
+    ports:
+      - "80:80"
+    networks:
+      - linksnip-network
+    restart: unless-stopped
+
+networks:
+  linksnip-network:
+    driver: bridge
+
+volumes:
+  mongodb-data:
+    driver: local
