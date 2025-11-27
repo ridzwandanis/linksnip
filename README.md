@@ -40,42 +40,52 @@ A minimalist, self-hosted URL shortening service with analytics dashboard built 
 
 ## 🚀 Quick Start
 
-### Option 1: VPS Deployment (Recommended for Production)
+### Option 1: One-Line Install (VPS/Server)
 
-Deploy to your VPS with Docker in 5 minutes:
+Deploy to your VPS in one command:
 
 ```bash
-# 1. Install Docker (if not installed)
+curl -fsSL https://raw.githubusercontent.com/ridzwandanis/linksnip/main/install.sh | sudo bash
+```
+
+This will:
+
+- ✅ Install Docker automatically
+- ✅ Clone the repository
+- ✅ Configure environment
+- ✅ Start all services
+- ✅ Ready in 2 minutes!
+
+**📖 Complete VPS Guide:** See [docs/VPS_DEPLOYMENT.md](docs/VPS_DEPLOYMENT.md) for manual installation, domain setup, and SSL configuration.
+
+### Option 2: Manual VPS Deployment
+
+```bash
+# 1. Install Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 
-# 2. Clone repository
+# 2. Clone and configure
 git clone https://github.com/ridzwandanis/linksnip.git
 cd linksnip
-
-# 3. Configure environment
 cp .env.production.example .env
 nano .env  # Edit BASE_URL and ADMIN_PASSWORD
 
-# 4. Start services
+# 3. Start services
 docker compose up -d
 ```
 
-**📖 Complete VPS Guide:** See [docs/VPS_DEPLOYMENT.md](docs/VPS_DEPLOYMENT.md) for detailed instructions including domain setup and SSL.
-
-### Option 2: Local Development
+### Option 3: Local Development
 
 ```bash
-# Clone and start
 git clone https://github.com/ridzwandanis/linksnip.git
 cd linksnip
 docker compose up -d
 ```
 
-### Option 3: Docker Hub (Pre-built Images)
+### Option 4: Docker Hub (Pre-built Images)
 
 ```bash
-# Download and run
 curl -O https://raw.githubusercontent.com/ridzwandanis/linksnip/main/docker-compose.prod.yml
 docker compose -f docker-compose.prod.yml up -d
 ```
